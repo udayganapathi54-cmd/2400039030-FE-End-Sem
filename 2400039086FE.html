@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Attendance Management - useReducer</title>
+
+  <!-- React CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    table {
+      border-collapse: collapse;
+      width: 60%;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+    }
+    button {
+      margin: 5px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h2>Classroom Attendance Management</h2>
+
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    const initialState = [
+      { id: 1, name: "Uday", status: "Not Marked" },
+      { id: 2, name: "Ravi", status: "Not Marked" },
+      { id: 3, name: "Anita", status: "Not Marked" }
+    ];
+
+    function attendanceReducer(state, action) {
+      switch (action.type) {
+
+        case "PRESENT":
+          return state.map(student =>
+            student.id === action.id
+              ? { ...student, status: "Present" }
+              : student
+          );
+
+        case "ABSENT":
+          return state.map(student =>
+            student.id === action.id
+              ? { ...student, status: "Absent" }
+              : student
+          );
+
+        case "RESET":
+          return state.map(student => ({
+            ...student,
+            status: "Not Marked"
+          }));
+
+        default:
+          return state;
+      }
+    }
+
+    function AttendanceApp() {
+      const [students, dispatch] = React.useReducer(attendanceReducer, initialState);
+
+      return (
+        <div>
+          <table>
+            <thead>
+              <tr>
+                <th>Student Name</th>
+                <th>Attendance Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {students.map(student => (
+                <tr key={student.id}>
+                  <td>{student.name}</td>
+                  <td>{student.status}</td>
+                  <td>
+                    <button onClick={() => dispatch({ type: "PRESENT", id: student.id })}>
+                      Present
+                    </button>
+                    <button onClick={() => dispatch({ type: "ABSENT", id: student.id })}>
+                      Absent
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <br />
+
+          <button onClick={() => dispatch({ type: "RESET" })}>
+            Reset Attendance
+          </button>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<AttendanceApp />);
+
+  </script>
+
+</body>
+</html>
